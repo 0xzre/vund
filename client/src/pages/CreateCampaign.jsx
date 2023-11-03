@@ -32,7 +32,6 @@ const CreateCampaign = () => {
 
     checkIfImage(form.image, async (res) => {
       if(res) {
-        console.log(form);
         setIsLoading(true);
         await createCampaign({...form, target: ethers.utils.parseUnits(form.target, 18)})
         setIsLoading(false);
@@ -124,6 +123,7 @@ const CreateCampaign = () => {
             btnType="submit"
             title="Submit Campaign"
             styles="bg-[#1dc071]"
+            isLoading={isLoading}
           />
         </div>
       </form>

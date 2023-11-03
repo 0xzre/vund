@@ -9,6 +9,7 @@ import { useStateContext } from '../context';
 const Navbar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState('dashboard');
+  const [isLoading, setIsLoading] = useState(false);
   const [toggleDrawer, setToggleDrawer] = useState(false)
   const { connect, address } = useStateContext();
   return (
@@ -34,11 +35,14 @@ const Navbar = () => {
           btnType="button" 
           title={address ? "Create a campaign" : "Connect wallet"} 
           styles={ address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+          isLoading={isLoading}
           handleClick={() => {
             if (address) {
               navigate('create-campaign');
             } else {
+              setIsLoading(true);
               connect();
+              setIsLoading(false);
             }
           }}
         />
@@ -84,11 +88,14 @@ const Navbar = () => {
               btnType="button" 
               title={address ? "Create a campaign" : "Connect wallet"} 
               styles={ address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+              isLoading={isLoading}
               handleClick={() => {
                 if (address) {
                   navigate('create-campaign');
                 } else {
+                  setIsLoading(true);
                   connect();
+                  setIsLoading(false);
                 }
               }}
             />

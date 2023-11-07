@@ -7,7 +7,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
     const navigate = useNavigate();
 
     const handleNavigate = (campaign) => {
-        navigate(`/campaign-details/${campaign.title}`, { state: { campaign }})
+        navigate(`/campaign-details/${campaign.title}`, { state: campaign })
     }
 
   return (
@@ -22,6 +22,8 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
                     You have not created any campaigns yet. Click 'create a campaign' above to create your first campaign.
                 </p>
             )}
+
+            
 
             {!isLoading && campaigns.length > 0 && campaigns.map((campaign, index) => (
                 <FundCard

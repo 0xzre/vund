@@ -1,6 +1,6 @@
+import { useStateContext } from '../context'
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { useStateContext } from '../context'
 import { DisplayCampaigns } from '../components'
 
 const Home = () => {

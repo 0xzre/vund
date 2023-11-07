@@ -7,7 +7,7 @@ const FundCard = ({ owner, title, description, target, deadline, amountCollected
 
     return (
         <div className='sm:w-[288px] w-full rounded-[15px] bg-[#1c1c24] cursor-pointer' onClick={handleClick}>
-            <img src={image} alt="fund" className='w-[288px] h-[288px] object-hover rounded-[15px]'/>
+            <img src={image} alt="fund" className='w-[100%] h-[288px] object-hover rounded-[15px]'/>
 
             <div className='flex flex-col p-4'>
                 <div className='flex flex-row items-center mb-[18px]'>

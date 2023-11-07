@@ -115,14 +115,15 @@ const CampaignDetails = () => {
                     <h4 className='font-epilogue font-semibold text-[14px] leading-[22px] text-white'>Believe is all you need.</h4>
                     <p className='mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]'>Support for no reward, just because it speaks to you.</p>
                   </div>
-
-                  <CustomButton
+                  <div className='flex flex-col justify-center items-center'>
+                    <CustomButton
                     btnType='button'
                     title='Fund Campaign'
                     styles='w-full bg-[#8c6dfd]'
                     handleClick={handleDonate}
                     isLoading={isLoading}
                     />
+                  </div>
             </div>
           </div>
         </div>

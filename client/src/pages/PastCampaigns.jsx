@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { DisplayCampaigns } from '../components'
 import { daysLeft } from '../utils'
 
-const Home = () => {
+const PastCampaigns = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
 
@@ -24,14 +24,15 @@ const Home = () => {
 
   return (
       <DisplayCampaigns
-        title="Current Campaigns"
+        title="Finished Campaigns"
         isLoading={isLoading}
         campaigns={campaigns.filter((campaign) => (
-          parseInt(daysLeft(campaign.deadline)) > 0
-        ))}
+          parseInt(daysLeft(campaign.deadline)) <= 0
+        ))
+        }
         />
       
     )
 }
 
-export default Home
+export default PastCampaigns

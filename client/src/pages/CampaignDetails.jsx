@@ -1,17 +1,21 @@
 import { useStateContext } from '../context'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { CountBox, CustomButton } from '../components'
-import { calculateBarPercentage, daysLeft } from '../utils'
-import { thirdweb } from '../assets'
+import { calculateBarPercentage, daysLeft, countAddressCampaigns } from '../utils'
 
 const CampaignDetails = () => {
   const { state } = useLocation();
-  const { donate, getDonations, contract, address } = useStateContext();
+  const { donate, getDonations, contract, getCampaigns } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
+  const [campaigns, setCampaigns] = useState([])
   const remainingDays = daysLeft(state.deadline);
+
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const fetchDonators = async () => {
     const data = await getDonations(state.pId);
@@ -19,15 +23,31 @@ const CampaignDetails = () => {
     setDonators(data);
   }
 
+  const fetchCampaigns = async () => {
+    const res = await getCampaigns();
+    setCampaigns(res);
+  }
+
   useEffect(() => 
     {
-      if(contract) fetchDonators();
-    },[contract, address]
-  )
+      if(contract) {
+        fetchDonators();
+        fetchCampaigns();
+      }
+    },[]
+  )    
 
-  const handleDonate = async () => {
+  const handleDonate = async (e) => {
+    e.preventDefault();
+
+    if (!(amount > 0 && amount !== '')) {
+      alert('Please input the correct amount');
+      return;
+    }
+
     setIsLoading(true);
-    await donate(state.pId, amount);
+    const res = await donate(state.pId, amount);
+    console.log("res", res);
     setIsLoading(false);
   }
 
@@ -43,7 +63,7 @@ const CampaignDetails = () => {
         </div>
 
         <div className='flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]'>
-          <CountBox title="Days Left" value={remainingDays}/>
+          <CountBox title={remainingDays > 0 ? 'Days left' : 'Days ago'} value={Math.abs(remainingDays)}/>
           <CountBox title={`Raised of ${state.target}`} value={state.amountCollected}/>
           <CountBox title="Total Backers" value={donators.length}/>
         </div>
@@ -55,14 +75,14 @@ const CampaignDetails = () => {
             <h4 className='font-epilogue font-semibold text-[18px] text-white uppercase'>
               Creator
             </h4>
-            <div className='mt-[20px] flex flex-row items-center flex-wrap gap-[14px] '>
-              <div className='w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#2c2f32] cursor-pointer'>
-                <img src={thirdweb} alt="user" className='w-[60%] h-[60%] object-contain' />
+            <div className='mt-[20px] flex flex-row items-center flex-wrap gap-[14px] ' >
+              <div className={`w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#fb2778] cursor-pointer`} onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>
+                <div className='w-[60%] h-[60%] object-contain' />
               </div>
 
               <div>
-                <h4 className='font-epilogue font-semibold text-[14px] text-white break-all'>{state.owner}</h4>
-                <p className='mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]'>6 Campaigns</p>
+                <h4 className='font-epilogue font-semibold text-[14px] text-white break-all cursor-pointer' onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>{state.owner}</h4>
+                <p className='mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]'>{countAddressCampaigns(campaigns,state.owner)} Campaigns</p>
               </div>
             </div>
           </div>
@@ -100,7 +120,7 @@ const CampaignDetails = () => {
           </h4>
           <div className='mt-[20px] flex flex-col p-4 bg-[#1c1c24] rounded-[10px]'>
             <p className='font-epilogue font-medium text-[20px] leading-[30px] text-center text-[#808191]'>
-                Fund the campaign
+                {remainingDays > 0 ? 'Fund the campaign' : 'Funding has ended'}
             </p>
             <div className='mt-[30px]'>
                 <input 
@@ -110,19 +130,28 @@ const CampaignDetails = () => {
                   className='w-full py-[10px] sm:px-[20px] px-[15px] outline-none border border-[#3a3a43] bg-transparent font-epilogue text-white text-[18px] leading-[30px] placeholder:text-[#4b5264] rounded-[10px]'
                   value={amount}
                   onChange={(e) => {setAmount(e.target.value)}}
+                  disabled={remainingDays <= 0}
                    />
                   <div className='my-[20px] p-4 bg-[#13131a] rounded-[10px]'>
                     <h4 className='font-epilogue font-semibold text-[14px] leading-[22px] text-white'>Believe is all you need.</h4>
                     <p className='mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]'>Support for no reward, just because it speaks to you.</p>
                   </div>
                   <div className='flex flex-col justify-center items-center'>
-                    <CustomButton
-                    btnType='button'
-                    title='Fund Campaign'
-                    styles='w-full bg-[#8c6dfd]'
-                    handleClick={handleDonate}
-                    isLoading={isLoading}
-                    />
+                    {remainingDays > 0 ? (
+                      <CustomButton
+                        btnType='submit'
+                        title='Fund Campaign'
+                        styles='w-full bg-[#8c6dfd]'
+                        handleClick={handleDonate}
+                        isLoading={isLoading}
+                        />
+                    ) : (
+                      <CustomButton
+                        title="Fund Campaign"
+                        styles='w-full bg-[#8c6dfd] cursor-not-allowed opacity-50'
+                        disabled
+                        />
+                    )}
                   </div>
             </div>
           </div>

@@ -6,10 +6,20 @@ import { money } from '../assets'
 import { CustomButton } from '../components'
 import { checkIfImage } from '../utils'
 import { FormField } from '../components'
-import { useStateContext } from '../context'
+import { useAddress } from '@thirdweb-dev/react';
+import { useStateContext } from '../context';
+
 
 const CreateCampaign = () => {
+  const address  = useAddress();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    if(address === undefined) {
+      navigate('/')
+    }
+  }, [address])
+
   const [isLoading, setIsLoading] = useState(false);
   const { createCampaign } = useStateContext();
   const [form, setForm] = useState({

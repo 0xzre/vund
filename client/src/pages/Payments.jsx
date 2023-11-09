@@ -1,13 +1,19 @@
+import React from 'react'
 import { useStateContext } from '../context'
 import { useState, useEffect } from 'react'
 import { DisplayCampaigns } from '../components'
 import { daysLeft } from '../utils'
 
-const Home = () => {
+const Payments = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
 
   const { contract, getCampaigns } = useStateContext();
+
+  const paidCampaigns = campaigns.map(campaign => {
+    const { pId } = campaign;
+    
+  })
 
   const fetchCampaigns = async () => {
     setIsLoading(true);
@@ -26,12 +32,10 @@ const Home = () => {
       <DisplayCampaigns
         title="Current Campaigns"
         isLoading={isLoading}
-        campaigns={campaigns.filter((campaign) => (
-          parseInt(daysLeft(campaign.deadline)) > 0
-        ))}
+        campaigns={paidCampaigns}
         />
       
     )
 }
 
-export default Home
+export default Payments

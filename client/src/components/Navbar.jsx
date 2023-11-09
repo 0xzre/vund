@@ -1,10 +1,12 @@
 import { useStateContext } from '../context';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { CustomButton } from '../components';
-import { logo, menu, search, thirdweb } from '../assets';
+import { logo, menu, search, profile } from '../assets';
 import { navlinks } from '../constants';
+import { Icon } from './Sidebar';
+import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -12,6 +14,18 @@ const Navbar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [toggleDrawer, setToggleDrawer] = useState(false)
   const { connect, address } = useStateContext();
+  const location = useLocation(); 
+
+  useEffect(() => {
+    navlinks.forEach((link) => {
+      if(location.pathname === link.link) {
+        setIsActive(link.name);
+      }
+    })
+
+  }
+  , [location.pathname])
+
   return (
     <div className='flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6'>
       <div className='lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] bg-[#1c1c24] rounded-[100px]'>
@@ -47,11 +61,13 @@ const Navbar = () => {
           }}
         />
 
-        <Link to='/profile'>
+        { address && (
+          <Link to='/profile'>
           <div className='w-[52px] h-[52px] rounded-full bg-[#2c2f32] flex justify-center items-center cursor-pointer' >
-            <img src={thirdweb} alt="user" className='w-[60%] h-[60%] object-contain' />
+            <Icon styles='w-[100%] h-[100%] object-contain rounded-full bg-[#2c2f32]' name={'profile'} imgUrl={profile}/>
           </div>
         </Link>
+        )}
       </div>
 
       <div className='sm:hidden flex justify-between items-center relative'>
@@ -62,14 +78,13 @@ const Navbar = () => {
           <img src={menu} alt="menu" className='w-[34px] h-[34px] object-contain cursor-pointer' onClick={() => setToggleDrawer(!toggleDrawer)} />
       </div>
 
-      <div className={`absolute top-[60px] right-0 left-0 bg-[#1c1c24] z-0 shadow-secondary py-4 ${!toggleDrawer ? '-translate-y-[100vh]' : 'translate-y-0' } transition-all duration-700`}>
+      <div className={`sm:hidden absolute top-[70px] right-0 left-0 bg-[#1c1c24] z-0 shadow-secondary pb-4 ${!toggleDrawer ? '-translate-y-[100vh]' : 'translate-y-0' } transition-all duration-700`}>
           <ul className='mb-4'>
             {navlinks.map((Link) => (
               <li
                 key={Link.name}
                 className={`flex p-4 ${isActive === Link.name && 'bg-[#3a3a43]'}`}
                 onClick={() => {
-                  setIsActive(Link.name);
                   setToggleDrawer(false);
                   navigate(Link.link);
                 }}>
@@ -81,6 +96,7 @@ const Navbar = () => {
 
               </li>
             ))}
+    
           </ul>
 
           <div className='flex mx-4'>

@@ -49,6 +49,9 @@ contract Crowdfunding {
         if(sent) {
             campaign.amountCollected = campaign.amountCollected + amount;
         }
+        // else {
+        //     revert("Failed to send Ether");
+        // }
     }
 
     function getDonators(uint256 _id) view public returns (address[] memory, uint256[] memory) {

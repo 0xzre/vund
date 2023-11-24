@@ -47,6 +47,7 @@ const CampaignDetails = () => {
 
     setIsLoading(true);
     const res = await donate(state.pId, amount);
+    // Handle dana kurang dari isi wallet
     console.log("res", res);
     setIsLoading(false);
   }
@@ -76,12 +77,13 @@ const CampaignDetails = () => {
               Creator
             </h4>
             <div className='mt-[20px] flex flex-row items-center flex-wrap gap-[14px] ' >
-              <div className={`w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#fb2778] cursor-pointer`} onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>
+              <div className='w-[52px] h-[52px] flex items-center justify-center rounded-full bg-[#fb2778]' >
                 <div className='w-[60%] h-[60%] object-contain' />
               </div>
 
               <div>
-                <h4 className='font-epilogue font-semibold text-[14px] text-white break-all cursor-pointer' onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>{state.owner}</h4>
+                <h4 className='font-epilogue font-semibold text-[14px] text-white break-all hover:cursor-pointer hover:text-[#808191] transition duration-300' onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>{state.owner}</h4>
+                <p className='mt-[4px] font-epilogue font-normal text-[12px] text-white hover:cursor-pointer hover:text-[#808191] transition duration-300' onClick={() => openInNewTab(`https://etherscan.io/address/${state.owner}`)}>Open Etherscan</p>
                 <p className='mt-[4px] font-epilogue font-normal text-[12px] text-[#808191]'>{countAddressCampaigns(campaigns,state.owner)} Campaigns</p>
               </div>
             </div>
@@ -142,7 +144,7 @@ const CampaignDetails = () => {
                         btnType='submit'
                         title='Fund Campaign'
                         styles='w-full bg-[#8c6dfd]'
-                        handleClick={handleDonate}
+                        handleClick={handleDonate()}
                         isLoading={isLoading}
                         />
                     ) : (

@@ -1,11 +1,17 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), nodePolyfills()],
+  plugins: [react()],
   define: {
     "process.env": {},
+  },
+  server: {
+    host: true,
+    port: 8000,
+    watch: {
+      usePolling: true,
+    }
   },
 });

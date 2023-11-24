@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { CustomButton } from '../components';
 import { logo, menu, search, profile } from '../assets';
-import { navlinks } from '../constants';
+import { navlinks, nonUserNavlinks } from '../constants';
 import { Icon } from './Sidebar';
 import { useLocation } from 'react-router-dom';
 
@@ -25,6 +25,16 @@ const Navbar = () => {
 
   }
   , [location.pathname])
+
+  const handleConnectWallet = () => {
+      if (address) {
+        navigate('create-campaign');
+      } else {
+        setIsLoading(true);
+        connect();
+        setIsLoading(false);
+      }
+    }
 
   return (
     <div className='flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6'>
@@ -47,7 +57,7 @@ const Navbar = () => {
       <div className='sm:flex hidden flex-row justify-end gap-4'>
         <CustomButton 
           btnType="button" 
-          title={address ? "Create a campaign" : "Connect wallet"} 
+          title={address ? "Create a campaign" : "Connect Metamask"} 
           styles={ address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
           isLoading={isLoading}
           handleClick={() => {
@@ -80,7 +90,7 @@ const Navbar = () => {
 
       <div className={`sm:hidden absolute top-[70px] right-0 left-0 bg-[#1c1c24] z-0 shadow-secondary pb-4 ${!toggleDrawer ? '-translate-y-[100vh]' : 'translate-y-0' } transition-all duration-700`}>
           <ul className='mb-4'>
-            {navlinks.map((Link) => (
+            {address !== undefined && navlinks.map((Link) => (
               <li
                 key={Link.name}
                 className={`flex p-4 ${isActive === Link.name && 'bg-[#3a3a43]'}`}
@@ -96,24 +106,34 @@ const Navbar = () => {
 
               </li>
             ))}
+            {
+              address === undefined && nonUserNavlinks.map((Link) => (
+                <li
+                  key={Link.name}
+                  className={`flex p-4 ${isActive === Link.name && 'bg-[#3a3a43]'}`}
+                  onClick={() => {
+                    setToggleDrawer(false);
+                    navigate(Link.link);
+                  }}>
+
+                    <img src={Link.imgUrl} alt={Link.name} className={`w-[24px] h-[24px] object-contain ${isActive === Link.name ? 'grayscale-0' : 'grayscale'}`}/>
+                    <p className={`ml-[20px] font-epilogue font-semibold text-[14px] ${isActive === Link.name ? 'text-[#1dc071]' : 'text-[#808191]' }`}>
+                      {Link.name}
+                    </p>
+
+                </li>
+              ))
+            }
     
           </ul>
 
           <div className='flex mx-4'>
             <CustomButton 
               btnType="button" 
-              title={address ? "Create a campaign" : "Connect wallet"} 
-              styles={ address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+              title={address ? "Create a campaign" : "Connect Metamask"} 
+              styles={ address ? "bg-[#1dc071] hover:opacity-[.8]" : "bg-[#8c6dfd]"}
               isLoading={isLoading}
-              handleClick={() => {
-                if (address) {
-                  navigate('create-campaign');
-                } else {
-                  setIsLoading(true);
-                  connect();
-                  setIsLoading(false);
-                }
-              }}
+              handleClick={handleConnectWallet}
             />
           </div>
       </div>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-
+import { useStateContext } from '../context'
 import { logo } from '../assets';
-import { navlinks } from '../constants'
+import { navlinks, nonUserNavlinks } from '../constants'
 
 export const Icon = ({styles, name, imgUrl, isActive, disabled, handleClick}) => (
     <div className={`w-[48px] h-[48px] rounded-[10px] ${isActive && isActive === name && 'bg-[#2c2f32'} flex justify-center items-center ${!disabled && 'cursor-pointer'} ${styles}`} onClick={handleClick}>
@@ -17,6 +17,7 @@ export const Icon = ({styles, name, imgUrl, isActive, disabled, handleClick}) =>
 const Sidebar = () => {
     const navigate = useNavigate();
     const [isActive, setIsActive] = useState('dashboard');
+    const { address } = useStateContext();
 
     useEffect(() => {
         navlinks.forEach((link) => {
@@ -36,7 +37,7 @@ const Sidebar = () => {
 
         <div className='flex-1 flex flex-col justify-between items-center bg-[#1c1c24] rounded-[20px] w-[76px] py-4 mt-12'>
             <div className='flex flex-col justify-center items-center gap-3'>
-                {navlinks.map((Link) => (
+                {address !== undefined && navlinks.map((Link) => (
                     <Icon
                     key={Link.name}
                     {...Link}
@@ -47,6 +48,19 @@ const Sidebar = () => {
                         }
                     }} />
                 ))}
+                {
+                    address === undefined && nonUserNavlinks.map((Link) => (
+                        <Icon
+                        key={Link.name}
+                        {...Link}
+                        isActive={isActive}
+                        handleClick={() => {
+                            if(!Link.disabled) {
+                                navigate(Link.link)
+                            }
+                        }} />
+                    ))
+                }
 
             </div>
 

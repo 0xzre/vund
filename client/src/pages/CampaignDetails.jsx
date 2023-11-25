@@ -52,6 +52,9 @@ const CampaignDetails = () => {
     setIsLoading(false);
   }
 
+  const handleDonateCampaign = (e) => {
+    const donatePromise = handleDonate(e);
+  }
   return (
     <div>
       <div className='w-full flex md:flex-row flex-col mt-10 gap-[30px]'>
@@ -63,7 +66,7 @@ const CampaignDetails = () => {
           </div>
         </div>
 
-        <div className='flex md:w-[150px] w-full flex-wrap justify-between gap-[30px]'>
+        <div className='flex md:w-[150px] w-full flex-wrap sm:flex justify-between md:gap-[30px] gap-[5px]'>
           <CountBox title={remainingDays > 0 ? 'Days left' : 'Days ago'} value={Math.abs(remainingDays)}/>
           <CountBox title={`Raised of ${state.target}`} value={state.amountCollected}/>
           <CountBox title="Total Backers" value={donators.length}/>
@@ -144,7 +147,7 @@ const CampaignDetails = () => {
                         btnType='submit'
                         title='Fund Campaign'
                         styles='w-full bg-[#8c6dfd]'
-                        handleClick={handleDonate()}
+                        handleClick={(e) => handleDonate(e)}
                         isLoading={isLoading}
                         />
                     ) : (

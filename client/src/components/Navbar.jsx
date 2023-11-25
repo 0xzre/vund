@@ -1,12 +1,12 @@
 import { useStateContext } from '../context';
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CustomButton } from '../components';
 import { logo, menu, search, profile } from '../assets';
 import { navlinks, nonUserNavlinks } from '../constants';
 import { Icon } from './Sidebar';
 import { useLocation } from 'react-router-dom';
+import { ConnectWallet } from '@thirdweb-dev/react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ const Navbar = () => {
   const [toggleDrawer, setToggleDrawer] = useState(false)
   const { connect, address } = useStateContext();
   const location = useLocation(); 
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     navlinks.forEach((link) => {
@@ -23,33 +24,23 @@ const Navbar = () => {
         setIsActive(link.name);
       }
     })
-    if(isActive === 'Dashboard' && location.pathname !== '/') {
-      searchValue === '' && setSearchValue(location.pathname.slice(1))
-    }
+    setSearchValue(searchParams.get('search') || '')
   }
-  , [location.pathname])
-
-  const handleConnectWallet = () => {
-      if (address) {
-        navigate('create-campaign');
-      } else {
-        setIsLoading(true);
-        connect();
-        setIsLoading(false);
-      }
-    }
+  , [location.pathname, searchParams])
 
   const handleSearch = () => {
-    navigate(`/${searchValue}`)
-    if(isActive === "Dashboard") {
-      navigate(0)
-    }
+    navigate(`/?search=${searchValue}`)
   }
 
   return (
     <div className='flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6'>
-      <div className='lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] bg-[#1c1c24] rounded-[100px]'>
-
+      <form 
+        className='lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] bg-[#1c1c24] rounded-[100px]'
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+        >
         <input 
           type="text" 
           placeholder='Search for campaigns' 
@@ -57,7 +48,8 @@ const Navbar = () => {
           onChange={(e) => setSearchValue(e.target.value)}
           className='flex w-full font-epilogue font-normal text-[14px] placeholder:text-[#4b5264] text-white bg-transparent outline-none' />
 
-        <div 
+        <button 
+        type='submit'
           className='w-[72px] h-full rounded-[20px] bg-[#4acd8d] flex justify-center items-center cursor-pointer'
           onClick={() => {
             handleSearch()
@@ -67,15 +59,16 @@ const Navbar = () => {
             src={search} 
             alt="search" 
             className='w-[15px] h-[15px] object-contain' 
-          />
-        </div>
-      </div>
+            />
+        </button>
+      </form>
 
       <div className='sm:flex hidden flex-row justify-end gap-4'>
-        <CustomButton 
+        {address && (
+          <CustomButton 
           btnType="button" 
-          title={address ? "Create a campaign" : "Connect Metamask"} 
-          styles={ address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+          title="Create a campaign" 
+          styles="bg-[#1dc071]"
           isLoading={isLoading}
           handleClick={() => {
             if (address) {
@@ -86,7 +79,9 @@ const Navbar = () => {
               setIsLoading(false);
             }
           }}
-        />
+          />
+        )}
+        <ConnectWallet switchToActiveChain={true}/>
 
         { address && (
           <Link to='/profile'>
@@ -98,15 +93,17 @@ const Navbar = () => {
       </div>
 
       <div className='sm:hidden flex justify-between items-center relative'>
-          <div className='w-[40px] h-[40px] rounded-[10px] bg-[#2c2f32] flex justify-center items-center cursor-pointer'>
+          <Link to={'/'} className='w-[40px] h-[40px] rounded-[10px] bg-[#2c2f32] flex justify-center items-center cursor-pointer'>
             <img src={logo} alt="user" className='w-[60%] h-[60%] object-contain' />
-          </div>
+          </Link>
+
+          <ConnectWallet switchToActiveChain={true} />
 
           <img src={menu} alt="menu" className='w-[34px] h-[34px] object-contain cursor-pointer' onClick={() => setToggleDrawer(!toggleDrawer)} />
       </div>
 
       <div className={`sm:hidden absolute top-[70px] right-0 left-0 bg-[#1c1c24] z-0 shadow-secondary pb-4 ${!toggleDrawer ? '-translate-y-[100vh]' : 'translate-y-0' } transition-all duration-700`}>
-          <ul className='mb-4'>
+          <ul className='mb-1'>
             {address !== undefined && navlinks.map((Link) => (
               <li
                 key={Link.name}
@@ -144,15 +141,6 @@ const Navbar = () => {
     
           </ul>
 
-          <div className='flex mx-4'>
-            <CustomButton 
-              btnType="button" 
-              title={address ? "Create a campaign" : "Connect Metamask"} 
-              styles={ address ? "bg-[#1dc071] hover:opacity-[.8]" : "bg-[#8c6dfd]"}
-              isLoading={isLoading}
-              handleClick={handleConnectWallet}
-            />
-          </div>
       </div>
 
       

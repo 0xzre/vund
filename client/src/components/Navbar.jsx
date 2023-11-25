@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [isActive, setIsActive] = useState('dashboard');
+  const [isActive, setIsActive] = useState('Dashboard');
   const [searchValue, setSearchValue] = useState('')
   const [isLoading, setIsLoading] = useState(false);
   const [toggleDrawer, setToggleDrawer] = useState(false)
@@ -23,7 +23,9 @@ const Navbar = () => {
         setIsActive(link.name);
       }
     })
-
+    if(isActive === 'Dashboard' && location.pathname !== '/') {
+      searchValue === '' && setSearchValue(location.pathname.slice(1))
+    }
   }
   , [location.pathname])
 
@@ -39,8 +41,7 @@ const Navbar = () => {
 
   const handleSearch = () => {
     navigate(`/${searchValue}`)
-    console.log(location)
-    if(isActive === "dashboard") {
+    if(isActive === "Dashboard") {
       navigate(0)
     }
   }

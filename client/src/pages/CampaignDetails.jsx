@@ -10,8 +10,9 @@ const CampaignDetails = () => {
   if( state === undefined) {
     navigate('/');
   }
-  const { donate, getDonations, contract, getCampaigns } = useStateContext();
+  const { donate, getDonations, contract, getCampaigns, address } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [successDonate, setSuccessDonate] = useState(false)
   const [amount, setAmount] = useState('');
   const [donators, setDonators] = useState([]);
   const [campaigns, setCampaigns] = useState([])
@@ -38,7 +39,7 @@ const CampaignDetails = () => {
         fetchDonators();
         fetchCampaigns();
       }
-    },[]
+    },[successDonate, contract]
   )    
 
   const handleDonate = async (e) => {
@@ -51,16 +52,21 @@ const CampaignDetails = () => {
 
     setIsLoading(true);
     const res = await donate(state.pId, amount);
-    // Handle dana kurang dari isi wallet
-    console.log("res", res);
+    // TODO handle error
     setIsLoading(false);
-  }
-
-  const handleDonateCampaign = (e) => {
-    const donatePromise = handleDonate(e);
+    setSuccessDonate(true);    
   }
   return (
     <div>
+      {successDonate && (
+      <div 
+        className='fixed ml-[8%] mt-[5%] backdrop-blur-md w-[70%] h-[40%] flex justify-center items-center rounded-[40px]'
+        onClick={() => setSuccessDonate(false)}
+        >
+        <div className='bg-[#8c6dfd] p-5 rounded-md font-bold'>
+          Donation success!
+        </div>
+      </div>)}
       <div className='w-full flex md:flex-row flex-col mt-10 gap-[30px]'>
         <div className='flex-1 flex-col'>
           <img src={state.image} alt="campaign_image" className='w-full h-[410px] object-cover rounded-xl' />
@@ -146,7 +152,7 @@ const CampaignDetails = () => {
                     <p className='mt-[20px] font-epilogue font-normal leading-[22px] text-[#808191]'>Support for no reward, just because it speaks to you.</p>
                   </div>
                   <div className='flex flex-col justify-center items-center'>
-                    {remainingDays > 0 ? (
+                    {(remainingDays > 0 & address !== undefined) ? (
                       <CustomButton
                         btnType='submit'
                         title='Fund Campaign'

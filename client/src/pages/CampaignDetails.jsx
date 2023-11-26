@@ -1,11 +1,15 @@
 import { useStateContext } from '../context'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { CountBox, CustomButton } from '../components'
 import { calculateBarPercentage, daysLeft, countAddressCampaigns } from '../utils'
 
 const CampaignDetails = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
+  if( state === undefined) {
+    navigate('/');
+  }
   const { donate, getDonations, contract, getCampaigns } = useStateContext();
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
